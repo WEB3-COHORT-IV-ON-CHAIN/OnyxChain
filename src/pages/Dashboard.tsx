@@ -1,13 +1,20 @@
 import { useNavigate } from 'react-router-dom';
 import logo from '../assets/logo.jpeg';
+import { generateWallet } from '../utils/wallet';
+import { useToast } from '../components/Toast';
 
 function Dashboard() {
   const navigate = useNavigate();
-  const mockAddress = '0x742d35Cc6634C0532925a3b844Bc9e7595f8bC21';
+    const { showToast } = useToast();
+  const mockAddress = generateWallet().address;
 
   const truncateAddress = (address: string) => {
     return `${address.slice(0, 6)}...${address.slice(-4)}`;
   };
+   const handleCopyAddress = () => {
+    navigator.clipboard.writeText(mockAddress);
+    showToast("Address copied to clipboard!", "success");
+  }
 
   return (
     <div className="min-h-full bg-black flex flex-col p-6 overflow-y-auto">
@@ -45,7 +52,7 @@ function Dashboard() {
             </div>
             <span className="text-blue-200 text-sm font-mono">{truncateAddress(mockAddress)}</span>
           </div>
-          <button className="text-blue-400 hover:text-blue-300 transition-colors">
+          <button className="text-blue-400 hover:text-blue-300 transition-colors" onClick={handleCopyAddress}>
             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
             </svg>

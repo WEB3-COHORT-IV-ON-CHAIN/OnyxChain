@@ -1,7 +1,7 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useToast } from '../components/Toast';
-import { generateSeedPhrase } from '../utils/wallet';
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useToast } from "../components/Toast";
+import { generateWallet } from "../utils/wallet";
 
 function CreateWallet() {
   const navigate = useNavigate();
@@ -10,24 +10,25 @@ function CreateWallet() {
   const [showSeed, setShowSeed] = useState(false);
 
   const handleGenerateSeed = () => {
-    const phrase = generateSeedPhrase(12);
-    setSeedPhrase(phrase);
+    const phrase = generateWallet().mnemonic?.phrase;
+    if (!phrase) return;
+    setSeedPhrase(phrase?.split(" "));
     setShowSeed(true);
-    showToast('Seed phrase generated successfully!', 'success');
+    showToast("Seed phrase generated successfully!", "success");
   };
 
   const handleCopySeed = () => {
-    navigator.clipboard.writeText(seedPhrase.join(' '));
-    showToast('Seed phrase copied to clipboard!', 'success');
+    navigator.clipboard.writeText(seedPhrase.join(" "));
+    showToast("Seed phrase copied to clipboard!", "success");
   };
 
   const handleContinue = () => {
     if (seedPhrase.length === 0) {
-      showToast('Please generate a seed phrase first', 'error');
+      showToast("Please generate a seed phrase first", "error");
       return;
     }
-    showToast('Wallet created successfully!', 'success');
-    setTimeout(() => navigate('/dashboard'), 500);
+    showToast("Wallet created successfully!", "success");
+    setTimeout(() => navigate("/dashboard"), 500);
   };
 
   return (
@@ -35,11 +36,22 @@ function CreateWallet() {
       {/* Header */}
       <div className="flex items-center mb-8">
         <button
-          onClick={() => navigate('/')}
+          onClick={() => navigate("/")}
           className="text-blue-400 hover:text-blue-300 transition-colors"
         >
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-6 w-6"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M15 19l-7-7 7-7"
+            />
           </svg>
         </button>
         <h1 className="text-xl font-bold text-white ml-4">Create Wallet</h1>
@@ -50,26 +62,50 @@ function CreateWallet() {
         {!showSeed ? (
           <>
             <div className="w-20 h-20 rounded-full bg-blue-600/20 flex items-center justify-center mb-6">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-10 w-10 text-blue-500"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+                />
               </svg>
             </div>
-            
+
             <h2 className="text-2xl font-bold text-white mb-2 text-center">
               Create a New Wallet
             </h2>
             <p className="text-blue-300/70 text-center mb-8 max-w-sm">
-              This will generate a new wallet with a secure seed phrase. (UI only)
+              This will generate a new wallet with a secure seed phrase. (UI
+              only)
             </p>
 
             {/* Info Box */}
             <div className="bg-blue-900/20 border border-blue-500/30 rounded-lg p-4 mb-8 max-w-sm">
               <div className="flex items-start space-x-3">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-blue-400 mt-0.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-5 w-5 text-blue-400 mt-0.5 shrink-0"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
                 </svg>
                 <p className="text-blue-200/80 text-sm">
-                  Your seed phrase is the master key to your wallet. Never share it with anyone.
+                  Your seed phrase is the master key to your wallet. Never share
+                  it with anyone.
                 </p>
               </div>
             </div>
@@ -108,8 +144,19 @@ function CreateWallet() {
               onClick={handleCopySeed}
               className="flex items-center space-x-2 text-blue-400 hover:text-blue-300 transition-colors mb-6"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-5 w-5"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
+                />
               </svg>
               <span className="text-sm font-medium">Copy Seed Phrase</span>
             </button>
@@ -117,11 +164,23 @@ function CreateWallet() {
             {/* Warning Box */}
             <div className="bg-yellow-900/20 border border-yellow-500/30 rounded-lg p-4 max-w-sm">
               <div className="flex items-start space-x-3">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-yellow-400 mt-0.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-5 w-5 text-yellow-400 mt-0.5 shrink-0"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+                  />
                 </svg>
                 <p className="text-yellow-200/80 text-sm">
-                  Never share your seed phrase. Anyone with it can access your wallet.
+                  Never share your seed phrase. Anyone with it can access your
+                  wallet.
                 </p>
               </div>
             </div>

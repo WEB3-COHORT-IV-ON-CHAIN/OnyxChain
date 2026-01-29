@@ -1,10 +1,11 @@
 import { useNavigate } from 'react-router-dom';
 import { useToast } from '../components/Toast';
+import { generateWallet } from '../utils/wallet';
 
 function Receive() {
   const navigate = useNavigate();
   const { showToast } = useToast();
-  const mockAddress = '0x742d35Cc6634C0532925a3b844Bc9e7595f8bC21';
+  const mockAddress = generateWallet().address;;
 
   const copyToClipboard = () => {
     navigator.clipboard.writeText(mockAddress);

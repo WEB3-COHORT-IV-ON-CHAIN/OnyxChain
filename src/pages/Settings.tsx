@@ -1,16 +1,17 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from '../components/Toast';
-import { generateSeedPhrase } from '../utils/wallet';
+import {generateWallet } from '../utils/wallet';
 
 function Settings() {
   const navigate = useNavigate();
   const { showToast } = useToast();
   const [showSeedPhrase, setShowSeedPhrase] = useState(false);
-  const [seedPhrase] = useState(() => generateSeedPhrase(12));
+  const [seedPhrase] = useState(() => generateWallet().mnemonic?.phrase.split(" "));
 
   const handleCopySeed = () => {
-    navigator.clipboard.writeText(seedPhrase.join(' '));
+   if (!seedPhrase) return
+    navigator.clipboard.writeText(seedPhrase.join(" "));
     showToast('Seed phrase copied!', 'success');
   };
 
@@ -63,7 +64,7 @@ function Settings() {
               <span className="text-yellow-400 text-xs">Never share this with anyone!</span>
             </div>
             <div className="grid grid-cols-3 gap-2 mb-3">
-              {seedPhrase.map((word, index) => (
+              {seedPhrase?.map((word, index) => (
                 <div key={index} className="bg-black/30 rounded px-2 py-1 text-center">
                   <span className="text-blue-400 text-xs">{index + 1}.</span>
                   <span className="text-white text-xs ml-1">{word}</span>
