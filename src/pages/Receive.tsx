@@ -1,22 +1,25 @@
 import { useNavigate } from 'react-router-dom';
 import { useToast } from '../components/Toast';
-import { generateWallet } from '../utils/wallet';
 
 function Receive() {
   const navigate = useNavigate();
   const { showToast } = useToast();
-  const mockAddress = generateWallet().address;;
+  const address = localStorage.getItem('originalAddress') || '';
 
   const copyToClipboard = () => {
-    navigator.clipboard.writeText(mockAddress);
+    if (!address) {
+      showToast('No wallet address found', 'error');
+      return;
+    }
+    navigator.clipboard.writeText(address);
     showToast('Address copied to clipboard!', 'success');
   };
 
   const handleShare = () => {
-    if (navigator.share) {
+    if (navigator.share && address) {
       navigator.share({
         title: 'My Wallet Address',
-        text: mockAddress,
+        text: address,
       });
     } else {
       copyToClipboard();
@@ -43,7 +46,7 @@ function Receive() {
         {/* Network Badge */}
         <div className="flex items-center space-x-2 bg-blue-900/20 rounded-full px-4 py-2 mb-6">
           <span className="w-2 h-2 bg-green-500 rounded-full"></span>
-          <span className="text-blue-300 text-sm">Ethereum Mainnet</span>
+          <span className="text-blue-300 text-sm">Sepolia Testnet</span>
         </div>
 
         {/* QR Code Placeholder */}
@@ -61,7 +64,7 @@ function Receive() {
           <p className="text-blue-300 text-sm text-center mb-3">Your Wallet Address</p>
           <div className="bg-blue-900/20 border border-blue-500/30 rounded-lg p-4">
             <p className="text-white text-sm font-mono text-center break-all leading-relaxed">
-              {mockAddress}
+              {address || 'No wallet found'}
             </p>
           </div>
         </div>
@@ -77,6 +80,19 @@ function Receive() {
           <span className="text-sm font-medium">Copy Address</span>
         </button>
 
+        {/* Get Testnet ETH */}
+        <a
+          href="https://sepoliafaucet.com"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center space-x-2 mt-4 text-green-400 hover:text-green-300 transition-colors"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <span className="text-sm font-medium">Get Free Sepolia ETH</span>
+        </a>
+
         {/* Warning */}
         <div className="bg-blue-900/20 border border-blue-500/30 rounded-lg p-4 mt-8 max-w-sm">
           <div className="flex items-start space-x-3">
@@ -84,7 +100,7 @@ function Receive() {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
             <p className="text-blue-200/80 text-sm">
-              Only send Ethereum and ERC-20 tokens to this address. Sending other assets may result in permanent loss.
+              This is a Sepolia testnet address. Only send Sepolia ETH to this address.
             </p>
           </div>
         </div>

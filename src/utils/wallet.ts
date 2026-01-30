@@ -1,4 +1,9 @@
-import { HDNodeWallet, Mnemonic } from "ethers";
+import { HDNodeWallet, Mnemonic, JsonRpcProvider, parseEther, formatEther } from "ethers";
+
+// Sepolia testnet configuration
+const SEPOLIA_RPC = "https://ethereum-sepolia-rpc.publicnode.com";
+const SEPOLIA_CHAIN_ID = 11155111;
+
 interface WalletVerificationResult {
   isMatch: boolean;
   originalAddress: string;
@@ -6,7 +11,98 @@ interface WalletVerificationResult {
   message: string;
 }
 
-// these generate a wallet
+export interface Transaction {
+  hash: string;
+  from: string;
+  to: string;
+  value: string;
+  timestamp: number;
+  type: 'send' | 'receive';
+}
+
+// Get Sepolia provider
+export function getProvider() {
+  return new JsonRpcProvider(SEPOLIA_RPC, SEPOLIA_CHAIN_ID);
+}
+
+// Get wallet instance from stored phrase
+export function getWalletFromStorage() {
+  const phrase = localStorage.getItem("originalPhrase");
+  if (!phrase) return null;
+  
+  const provider = getProvider();
+  const wallet = HDNodeWallet.fromPhrase(phrase);
+  return wallet.connect(provider);
+}
+
+// Get balance in ETH
+export async function getBalance(address: string): Promise<string> {
+  try {
+    const provider = getProvider();
+    const balance = await provider.getBalance(address);
+    return formatEther(balance);
+  } catch (error) {
+    console.error("Error fetching balance:", error);
+    return "0";
+  }
+}
+
+// Send Sepolia ETH
+export async function sendTransaction(
+  toAddress: string,
+  amountInEth: string
+): Promise<{ success: boolean; hash?: string; error?: string }> {
+  try {
+    const wallet = getWalletFromStorage();
+    if (!wallet) {
+      return { success: false, error: "No wallet found" };
+    }
+
+    const tx = await wallet.sendTransaction({
+      to: toAddress,
+      value: parseEther(amountInEth),
+    });
+
+    // Wait for confirmation
+    await tx.wait();
+
+    // Save to local transaction history
+    saveTransaction({
+      hash: tx.hash,
+      from: wallet.address,
+      to: toAddress,
+      value: amountInEth,
+      timestamp: Date.now(),
+      type: 'send',
+    });
+
+    return { success: true, hash: tx.hash };
+  } catch (error) {
+    console.error("Transaction error:", error);
+    return { 
+      success: false, 
+      error: error instanceof Error ? error.message : "Transaction failed" 
+    };
+  }
+}
+
+// Save transaction to local storage
+export function saveTransaction(tx: Transaction) {
+  const transactions = getTransactions();
+  transactions.unshift(tx);
+  localStorage.setItem("transactions", JSON.stringify(transactions.slice(0, 50)));
+}
+
+// Get transactions from local storage
+export function getTransactions(): Transaction[] {
+  try {
+    const stored = localStorage.getItem("transactions");
+    return stored ? JSON.parse(stored) : [];
+  } catch {
+    return [];
+  }
+}
+
 export function generateWallet() {
   const wallet = HDNodeWallet.createRandom();
   localStorage.setItem("originalAddress", wallet.address);
@@ -15,7 +111,6 @@ export function generateWallet() {
   return wallet;
 }
 
-// validate seed phrase
 export function validateSeedPhrase(phrase: string): boolean {
   const words = phrase.trim().toLowerCase().split(/\s+/);
   return words.length === 12 || words.length === 24;
@@ -46,11 +141,9 @@ export const verifyPhrase = (
   }
 
   try {
-    // Restore wallet from entered phrase
     const restoredWallet = HDNodeWallet.fromPhrase(enteredPhrase.trim());
     const enteredAddress = restoredWallet.address;
 
-    // Compare addresses
     const isMatch =
       originalAddress.toLowerCase() === enteredAddress.toLowerCase();
 
@@ -59,20 +152,19 @@ export const verifyPhrase = (
       originalAddress,
       enteredAddress,
       message: isMatch
-        ? "✅ Phrase matches! Wallet restored successfully."
-        : "❌ Phrase does not match the original wallet.",
+        ? "Phrase matches! Wallet restored successfully."
+        : " Phrase does not match the original wallet.",
     };
   } catch (error) {
     return {
       isMatch: false,
       originalAddress,
       enteredAddress: "",
-      message: `❌ Invalid seed phrase: ${error instanceof Error ? error.message : "Unknown error"}`,
+      message: ` Invalid seed phrase: ${error instanceof Error ? error.message : "Unknown error"}`,
     };
   }
 };
 
-// these generate a mock wallet
 export function generateMockAddress(): string {
   const chars = "0123456789abcdef";
   let address = "0x";

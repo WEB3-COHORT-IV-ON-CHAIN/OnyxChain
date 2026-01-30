@@ -6,12 +6,37 @@ import { useToast } from "../components/Toast";
 function Dashboard() {
   const navigate = useNavigate();
   const { showToast } = useToast();
-  // const mockAddress = generateWallet().address;
+  const [balance, setBalance] = useState("0");
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [loading, setLoading] = useState(true);
   const mockAddress: string | null = localStorage.getItem("originalAddress");
+
+  useEffect(() => {
+    const fetchData = async () => {
+      if (mockAddress) {
+        setLoading(true);
+        const bal = await getBalance(mockAddress);
+        setBalance(bal);
+        setTransactions(getTransactions());
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, [mockAddress]);
 
   const truncateAddress = (address: string) => {
     return `${address.slice(0, 6)}...${address.slice(-4)}`;
   };
+
+  const formatDate = (timestamp: number) => {
+    return new Date(timestamp).toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+  };
+
   const handleCopyAddress = async () => {
     if (!mockAddress) {
       showToast("No address found, There is no address to copy.", "error");
@@ -106,9 +131,17 @@ function Dashboard() {
 
       {/* Balance Card */}
       <div className="bg-linear-to-br from-blue-600/30 to-blue-800/30 border border-blue-500/30 rounded-2xl p-6 mb-6">
-        <p className="text-blue-300 text-sm mb-1">Total Balance</p>
-        <h2 className="text-4xl font-bold text-white mb-1">0.00 ETH</h2>
-        <p className="text-blue-300/70 text-sm">≈ $0.00 USD</p>
+        <div className="flex items-center justify-between mb-1">
+          <p className="text-blue-300 text-sm">Total Balance</p>
+          <div className="flex items-center space-x-1">
+            <span className="w-2 h-2 bg-green-500 rounded-full"></span>
+            <span className="text-blue-300/70 text-xs">Sepolia</span>
+          </div>
+        </div>
+        <h2 className="text-4xl font-bold text-white mb-1">
+          {loading ? "..." : `${parseFloat(balance).toFixed(4)} ETH`}
+        </h2>
+        <p className="text-blue-300/70 text-sm">Testnet</p>
       </div>
 
       {/* Action Buttons */}
@@ -180,24 +213,70 @@ function Dashboard() {
       {/* Recent Activity */}
       <div className="flex-1">
         <h3 className="text-white font-semibold mb-4">Recent Activity</h3>
-        <div className="flex flex-col items-center justify-center text-center py-8">
-          <div className="w-16 h-16 rounded-full bg-blue-900/20 flex items-center justify-center mb-4">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-8 w-8 text-blue-500/50"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor">
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-              />
-            </svg>
+        {transactions.length === 0 ? (
+          <div className="flex flex-col items-center justify-center text-center py-8">
+            <div className="w-16 h-16 rounded-full bg-blue-900/20 flex items-center justify-center mb-4">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-8 w-8 text-blue-500/50"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor">
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              </svg>
+            </div>
+            <p className="text-blue-300/50 text-sm">No recent transactions</p>
           </div>
-          <p className="text-blue-300/50 text-sm">No recent transactions</p>
-        </div>
+        ) : (
+          <div className="space-y-3">
+            {transactions.slice(0, 10).map((tx) => (
+              <div
+                key={tx.hash}
+                className="bg-blue-900/20 border border-blue-500/30 rounded-lg p-4 flex items-center justify-between"
+              >
+                <div className="flex items-center space-x-3">
+                  <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                    tx.type === 'send' ? 'bg-red-500/20' : 'bg-green-500/20'
+                  }`}>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className={`h-5 w-5 ${tx.type === 'send' ? 'text-red-400' : 'text-green-400'}`}
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d={tx.type === 'send' ? "M7 11l5-5m0 0l5 5m-5-5v12" : "M17 13l-5 5m0 0l-5-5m5 5V6"}
+                      />
+                    </svg>
+                  </div>
+                  <div>
+                    <p className="text-white text-sm font-medium">
+                      {tx.type === 'send' ? 'Sent' : 'Received'}
+                    </p>
+                    <p className="text-blue-300/70 text-xs">
+                      {tx.type === 'send' ? `To: ${truncateAddress(tx.to)}` : `From: ${truncateAddress(tx.from)}`}
+                    </p>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <p className={`text-sm font-medium ${tx.type === 'send' ? 'text-red-400' : 'text-green-400'}`}>
+                    {tx.type === 'send' ? '-' : '+'}{tx.value} ETH
+                  </p>
+                  <p className="text-blue-300/50 text-xs">{formatDate(tx.timestamp)}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
