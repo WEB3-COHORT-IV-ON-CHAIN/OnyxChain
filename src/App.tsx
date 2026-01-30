@@ -1,35 +1,37 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { HashRouter as Router, Routes, Route } from "react-router-dom";
+import { ToastProvider } from "./components/Toast";
+import Welcome from "./pages/Welcome";
+import CreateWallet from "./pages/CreateWallet";
+import ImportWallet from "./pages/ImportWallet";
+import Dashboard from "./pages/Dashboard";
+import Send from "./pages/Send";
+import Receive from "./pages/Receive";
+import Assets from "./pages/Assets";
+import Settings from "./pages/Settings";
+import SeedPhraseValidator from "./pages/ValidatePassPhrase";
+import SetUp from "./pages/SetUp";
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    <ToastProvider>
+      <Router>
+        <div className="w-[360px] h-[600px] overflow-y-auto overflow-x-hidden bg-black">
+          <Routes>
+            <Route path="/" element={<Welcome />} />
+            <Route path="/create" element={<CreateWallet />} />
+            <Route path="/setup" element={<SetUp />} />
+            <Route path="/validation" element={<SeedPhraseValidator />} />
+            <Route path="/import" element={<ImportWallet />} />
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/send" element={<Send />} />
+            <Route path="/receive" element={<Receive />} />
+            <Route path="/assets" element={<Assets />} />
+            <Route path="/settings" element={<Settings />} />
+          </Routes>
+        </div>
+      </Router>
+    </ToastProvider>
+  );
 }
 
-export default App
+export default App;

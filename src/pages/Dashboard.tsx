@@ -1,9 +1,7 @@
 import { useNavigate } from "react-router-dom";
-import { useState, useEffect } from "react";
 import logo from "../assets/logo.jpeg";
+// import { generateWallet } from "../utils/wallet";
 import { useToast } from "../components/Toast";
-import { getBalance, getTransactions } from "../utils/wallet";
-import type { Transaction } from "../utils/wallet";
 
 function Dashboard() {
   const navigate = useNavigate();
