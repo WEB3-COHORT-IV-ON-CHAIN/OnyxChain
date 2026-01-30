@@ -6,9 +6,7 @@ interface WalletVerificationResult {
   message: string;
 }
 
-/**
- * Generates a real wallet address
- */
+// these generate a wallet
 export function generateWallet() {
   const wallet = HDNodeWallet.createRandom();
   localStorage.setItem("originalAddress", wallet.address);
@@ -17,32 +15,22 @@ export function generateWallet() {
   return wallet;
 }
 
-/**
- * Validates if a seed phrase has the correct format
- * NOTE: This only checks format, not cryptographic validity
- */
+// validate seed phrase
 export function validateSeedPhrase(phrase: string): boolean {
   const words = phrase.trim().toLowerCase().split(/\s+/);
   return words.length === 12 || words.length === 24;
 }
 
-/**
- * Validates if a seed phrase has cryptographic validity
- * NOTE: This only checks not cryptographic validity
- */
+
 export function validateSeedPhraseStrong(phrase: string): boolean {
   try {
-    Mnemonic.fromPhrase(phrase); // This validates against BIP39 wordlist
+    Mnemonic.fromPhrase(phrase);
     return true;
   } catch {
     return false;
   }
 }
 
-/**
- * Validates if a seed phrase entered by the user is the one generated at start of the signup process
- * NOTE: This verifies the seed phrase entered by user against on the earlier generated seed phrase in order to enforce passphrase storage.
- */
 export const verifyPhrase = (
   enteredPhrase: string,
 ): WalletVerificationResult => {
@@ -84,10 +72,7 @@ export const verifyPhrase = (
   }
 };
 
-/**
- * Generates a mock wallet address
- * NOTE: This is NOT a real address - for UI demo only
- */
+// these generate a mock wallet
 export function generateMockAddress(): string {
   const chars = "0123456789abcdef";
   let address = "0x";

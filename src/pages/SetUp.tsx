@@ -126,7 +126,7 @@ function SetUp() {
                 value={password}
                 autoComplete="new-password"
                 onChange={handlePasswordChange}
-                className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 pr-10
+                className="mt-1 w-full rounded-md text-[#FFFFFF] border border-gray-300 px-3 py-2 pr-10
                  focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
 
@@ -158,7 +158,7 @@ function SetUp() {
                 value={confirmPassword}
                 autoComplete="new-password"
                 onChange={handleConfirmChange}
-                className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 pr-10
+                className="mt-1 w-full rounded-md text-[#FFFFFF] border border-gray-300 px-3 py-2 pr-10
                  focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
 
@@ -186,6 +186,7 @@ function SetUp() {
           </button>
         </form>
       ) : (
+        <>
         <form
           onSubmit={handleLogin}
           className="relative z-10 bg-blue-900/20 border border-blue-500/30 rounded-lg p-4 mb-8 max-w-sm flex flex-col space-y-3 ">
@@ -203,7 +204,7 @@ function SetUp() {
                 value={password}
                 autoComplete="new-password"
                 onChange={handlePasswordChange}
-                className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 pr-10
+                className="mt-1 w-full rounded-md border text-[#FFFFFF] border-gray-300 px-3 py-2 pr-10
                  focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
 
@@ -229,6 +230,12 @@ function SetUp() {
             Submit
           </button>
         </form>
+        <button
+          onClick={() => {localStorage.removeItem("password"); navigate("/")}}
+          className="relative z-10 w-full py-3.5 px-6 bg-linear-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 text-white font-semibold rounded-xl transition-all duration-300 shadow-lg shadow-blue-600/30 hover:shadow-blue-500/50 hover:scale-[1.02] active:scale-[0.98]">
+          Create Wallet
+        </button>
+        </>
       )}
     </div>
   );
