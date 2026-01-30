@@ -4,7 +4,7 @@ import logo from "../assets/logo.jpeg";
 
 function Welcome() {
   const navigate = useNavigate();
-  const [user, setUser] = useState<string | null>(() =>
+  const [user, _setUser] = useState<string | null>(() =>
     localStorage.getItem("originalAddress"),
   );
 

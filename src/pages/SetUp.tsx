@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { EyeClosed, Eye } from "lucide-react";
 import { useToast } from "../components/Toast";
-import { Navigate, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 type Errors = {
   length: boolean;
@@ -19,7 +19,7 @@ function SetUp() {
     length: false,
     match: false,
   });
-  const [savedPassword, setSavedPassword] = useState<string | null>(() =>
+  const [savedPassword, _setSavedPassword] = useState<string | null>(() =>
     localStorage.getItem("password"),
   );
 
