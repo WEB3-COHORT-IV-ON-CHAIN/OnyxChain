@@ -15,6 +15,7 @@ function CreateWallet() {
     setSeedPhrase(phrase?.split(" "));
     setShowSeed(true);
     showToast("Seed phrase generated successfully!", "success");
+    localStorage.setItem("seed-phrase", phrase);
   };
 
   const handleCopySeed = () => {
@@ -28,7 +29,7 @@ function CreateWallet() {
       return;
     }
     showToast("Wallet created successfully!", "success");
-    setTimeout(() => navigate("/dashboard"), 500);
+    setTimeout(() => navigate("/validation"), 500);
   };
 
   return (
@@ -37,15 +38,13 @@ function CreateWallet() {
       <div className="flex items-center mb-8">
         <button
           onClick={() => navigate("/")}
-          className="text-blue-400 hover:text-blue-300 transition-colors"
-        >
+          className="text-blue-400 hover:text-blue-300 transition-colors">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             className="h-6 w-6"
             fill="none"
             viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
+            stroke="currentColor">
             <path
               strokeLinecap="round"
               strokeLinejoin="round"
@@ -67,8 +66,7 @@ function CreateWallet() {
                 className="h-10 w-10 text-blue-500"
                 fill="none"
                 viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
+                stroke="currentColor">
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -94,8 +92,7 @@ function CreateWallet() {
                   className="h-5 w-5 text-blue-400 mt-0.5 shrink-0"
                   fill="none"
                   viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
+                  stroke="currentColor">
                   <path
                     strokeLinecap="round"
                     strokeLinejoin="round"
@@ -112,8 +109,7 @@ function CreateWallet() {
 
             <button
               onClick={handleGenerateSeed}
-              className="w-full max-w-sm py-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors duration-200 shadow-lg shadow-blue-600/30"
-            >
+              className="w-full max-w-sm py-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors duration-200 shadow-lg shadow-blue-600/30">
               Generate Seed Phrase
             </button>
           </>
@@ -131,8 +127,7 @@ function CreateWallet() {
               {seedPhrase.map((word, index) => (
                 <div
                   key={index}
-                  className="bg-blue-900/30 border border-blue-500/30 rounded-lg px-3 py-2 text-center"
-                >
+                  className="bg-blue-900/30 border border-blue-500/30 rounded-lg px-3 py-2 text-center">
                   <span className="text-blue-400 text-xs">{index + 1}. </span>
                   <span className="text-white text-sm">{word}</span>
                 </div>
@@ -142,15 +137,13 @@ function CreateWallet() {
             {/* Copy Button */}
             <button
               onClick={handleCopySeed}
-              className="flex items-center space-x-2 text-blue-400 hover:text-blue-300 transition-colors mb-6"
-            >
+              className="flex items-center space-x-2 text-blue-400 hover:text-blue-300 transition-colors mb-6">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 className="h-5 w-5"
                 fill="none"
                 viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
+                stroke="currentColor">
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -169,8 +162,7 @@ function CreateWallet() {
                   className="h-5 w-5 text-yellow-400 mt-0.5 shrink-0"
                   fill="none"
                   viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
+                  stroke="currentColor">
                   <path
                     strokeLinecap="round"
                     strokeLinejoin="round"
@@ -192,8 +184,7 @@ function CreateWallet() {
       {showSeed && (
         <button
           onClick={handleContinue}
-          className="w-full py-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors duration-200 shadow-lg shadow-blue-600/30 mt-6"
-        >
+          className="w-full py-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors duration-200 shadow-lg shadow-blue-600/30 mt-6">
           I've Saved My Seed Phrase
         </button>
       )}
